@@ -1,0 +1,70 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*.html",
+      "destination": "/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/leistungen",
+      "destination": "/leistungen.html"
+    },
+    {
+      "source": "/parkett",
+      "destination": "/parkett.html"
+    },
+    {
+      "source": "/kork",
+      "destination": "/kork.html"
+    },
+    {
+      "source": "/laminat",
+      "destination": "/laminat.html"
+    },
+    {
+      "source": "/teppich",
+      "destination": "/teppich.html"
+    },
+    {
+      "source": "/pvc",
+      "destination": "/pvc.html"
+    },
+    {
+      "source": "/reinigung",
+      "destination": "/reinigung.html"
+    },
+    {
+      "source": "/weitere-leistungen",
+      "destination": "/weitere-leistungen.html"
+    },
+    {
+      "source": "/galerie",
+      "destination": "/galerie.html"
+    },
+    {
+      "source": "/team",
+      "destination": "/team.html"
+    },
+    {
+      "source": "/kontakt",
+      "destination": "/kontakt.html"
+    },
+    {
+      "source": "/impressum",
+      "destination": "/impressum.html"
+    },
+    {
+      "source": "/datenschutz",
+      "destination": "/datenschutz.html"
+    }
+  ]
+}
