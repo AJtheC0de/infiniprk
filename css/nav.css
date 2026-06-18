@@ -36,7 +36,6 @@
 
 .brand-logo img {
   width: 198px;
-  filter: brightness(0.42) sepia(0.45) saturate(0.8);
   transition: width 350ms var(--ease-organic);
 }
 
