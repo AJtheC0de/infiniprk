@@ -475,20 +475,25 @@
 
 .team-intro {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(34px, 7vw, 80px);
+}
+
+.team-intro > *,
+.team-grid > * {
+  min-width: 0;
 }
 
 .team-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 360px));
   justify-content: center;
   gap: 24px;
 }
 
 .team-card {
-  width: calc(33.333% - 16px);
-  min-width: 280px;
+  width: 100%;
   padding: 36px;
   text-align: center;
 }
@@ -1034,8 +1039,12 @@
     columns: 2;
   }
 
+  .team-intro {
+    gap: 24px;
+  }
+
   .team-card {
-    width: calc(50% - 12px);
+    max-width: 420px;
   }
 
   .legal-layout {
@@ -1050,6 +1059,17 @@
 @media (max-width: 600px) {
   :root {
     --container: min(100% - 32px, 1180px);
+  }
+
+  .team-page {
+    --container: min(100% - 48px, 520px);
+    overflow-x: hidden;
+  }
+
+  .team-page .page-hero,
+  .team-page .section {
+    max-width: 100%;
+    overflow-x: clip;
   }
 
   .page-hero {
@@ -1079,6 +1099,20 @@
     line-height: 0.98;
   }
 
+  .team-page .page-title {
+    max-width: 100%;
+    font-size: clamp(2.25rem, 9.6vw, 2.75rem);
+    line-height: 1;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .team-page .page-title em,
+  .team-page .section-heading em {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
   .page-lead {
     margin-top: 20px;
     font-size: 0.95rem;
@@ -1094,6 +1128,14 @@
   .detail-copy h2 {
     font-size: clamp(2rem, 10vw, 3rem);
     line-height: 1.06;
+  }
+
+  .team-page .section-heading,
+  .team-page .feature-copy h2,
+  .team-page .detail-copy h2 {
+    font-size: clamp(1.95rem, 7.6vw, 2.25rem);
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .feature-copy p,
@@ -1186,7 +1228,46 @@
   }
 
   .team-card {
-    width: 100%;
+    max-width: 100%;
+    padding: 28px 22px;
+    border-radius: 18px;
+  }
+
+  .team-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .team-intro .section-copy,
+  .team-card p {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .team-intro .section-heading em {
+    display: block;
+  }
+
+  .avatar {
+    width: 128px;
+    height: 128px;
+    margin-bottom: 22px;
+  }
+
+  .team-card h2 {
+    font-size: clamp(1.8rem, 9vw, 2.25rem);
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+  }
+
+  .team-role {
+    margin-bottom: 16px;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+  }
+
+  .team-card p {
+    font-size: 0.82rem;
+    line-height: 1.6;
   }
 
   .form-grid {
