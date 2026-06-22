@@ -564,6 +564,14 @@
   position: relative;
 }
 
+.form-field.is-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .form-field.full {
   grid-column: 1 / -1;
 }
