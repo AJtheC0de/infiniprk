@@ -4,12 +4,110 @@ const MINIMUM_SUBMIT_MS = 4000;
 const MAX_FIELD_LENGTH = 4000;
 const attempts = new Map();
 
+const SPAM_WORDS = [
+  "seo",
+  "seo backlinks",
+  "seo paket",
+  "seo package",
+  "seo service",
+  "seo services",
+  "suchmaschinenoptimierung",
+  "search engine optimization",
+  "backlink",
+  "backlinks",
+  "linkbuilding",
+  "link building",
+  "keyword ranking",
+  "google ranking",
+  "google rankings",
+  "ranking verbessern",
+  "rank on google",
+  "google bewertung",
+  "google bewertungen",
+  "google review",
+  "google reviews",
+  "google rating",
+  "google ratings",
+  "5 sterne bewertung",
+  "5 star review",
+  "bewertungen kaufen",
+  "buy reviews",
+  "trustpilot",
+  "webdesign",
+  "web design",
+  "webdesigner",
+  "website redesign",
+  "website design",
+  "website development",
+  "web development",
+  "neue website",
+  "new website",
+  "homepage erstellen",
+  "redesign your website",
+  "marketing agentur",
+  "marketing agency",
+  "digital marketing",
+  "online marketing",
+  "social media marketing",
+  "lead generation",
+  "leadgenerierung",
+  "generate leads",
+  "mehr kunden",
+  "more customers",
+  "increase traffic",
+  "increase leads",
+  "google ads",
+  "facebook ads",
+  "instagram ads",
+  "ppc campaign",
+  "email marketing",
+  "ai automation",
+  "ki automatisierung",
+  "ai agency",
+  "ki agentur",
+  "chatgpt",
+  "chatbot",
+  "virtual assistant",
+  "guest post",
+  "sponsored post",
+  "partnership opportunity",
+  "business proposal",
+  "quick question",
+  "i found your website",
+  "improve your website",
+  "grow your business",
+  "telegram",
+  "whatsapp",
+  "whatsapp marketing",
+  "casino",
+  "crypto",
+  "forex",
+  "loan",
+  "kredit",
+  "viagra",
+  "porn",
+];
+
+const SPAM_DOMAINS = [
+  "@outlookindia.com",
+  "@yandex.com",
+  "@mail.ru",
+  "@163.com",
+  "@qq.com",
+];
+
+const spamWordPatterns = [...new Set(SPAM_WORDS)]
+  .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+"))
+  .map((word) => new RegExp(`(^|[^\\p{L}\\p{N}])${word}(?=$|[^\\p{L}\\p{N}])`, "iu"));
+
 const spamPatterns = [
-  /\b(?:casino|crypto|forex|loan|viagra|porn|seo\s*backlinks?|rank\s*on\s*google)\b/i,
   /\b(?:telegram|whatsapp)\s*[:=]\s*[+@]/i,
-  /https?:\/\/[^\s]+(?:\s+https?:\/\/[^\s]+){2,}/i,
   /<a\s+href|<\/a>|<script|<\/script>/i,
 ];
+
+const hasUrlPattern = /https?:\/\/[^\s<>"']+|\bwww\b\.?[^\s<>"']*/i;
+const urlPattern = /https?:\/\/[^\s<>"']+|\bwww\b\.?[^\s<>"']*/gi;
+const emailPattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 
 const json = (response, status, body) => {
   response.status(status).json(body);
@@ -61,6 +159,27 @@ const parseBody = (request, rawBody) => {
 };
 
 const cleanValue = (value) => String(value || "").trim().slice(0, MAX_FIELD_LENGTH);
+
+const countMatches = (value, pattern) => (value.match(pattern) || []).length;
+
+const hasSpamDomain = (email) => {
+  const normalizedEmail = email.toLowerCase();
+  return SPAM_DOMAINS.some((domain) => normalizedEmail.endsWith(domain));
+};
+
+const isSpamPayload = (payload) => {
+  const combinedText = Object.values(payload).join(" ");
+  const message = payload.message || "";
+
+  return (
+    hasSpamDomain(payload.replyTo) ||
+    spamWordPatterns.some((pattern) => pattern.test(combinedText)) ||
+    spamPatterns.some((pattern) => pattern.test(combinedText)) ||
+    hasUrlPattern.test(message) ||
+    countMatches(message, urlPattern) > 3 ||
+    countMatches(message, emailPattern) > 3
+  );
+};
 
 const verifyTurnstile = async (token, ip) => {
   const secret = process.env.TURNSTILE_SECRET_KEY;
@@ -139,9 +258,7 @@ module.exports = async function handler(request, response) {
       return json(response, 400, { ok: false });
     }
 
-    const combinedText = Object.values(payload).join(" ");
-
-    if (spamPatterns.some((pattern) => pattern.test(combinedText))) {
+    if (isSpamPayload(payload)) {
       return json(response, 400, { ok: false });
     }
 
